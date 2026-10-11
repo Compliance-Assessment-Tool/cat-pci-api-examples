@@ -2,7 +2,7 @@
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://www.postman.com/complianceassessmenttool/cat-pci-dss-compliance-api)
 [![API reference](https://img.shields.io/badge/API_reference-Fern-4338ca)](https://complianceassessmenttool.docs.buildwithfern.com/)
-[![check](https://github.com/complianceassessmenttool/cat-pci-api-examples/actions/workflows/check.yml/badge.svg)](https://github.com/complianceassessmenttool/cat-pci-api-examples/actions/workflows/check.yml)
+[![check](https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples/actions/workflows/check.yml/badge.svg)](https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples/actions/workflows/check.yml)
 
 Working examples for the [Compliance Assessment Tool (CAT) API](https://banks.complianceassessmenttool.com/pci-compliance-api?utm_source=github&utm_medium=readme): a white-label PCI DSS self-assessment API for **ISOs, acquiring banks, PayFacs and MSPs**.
 
