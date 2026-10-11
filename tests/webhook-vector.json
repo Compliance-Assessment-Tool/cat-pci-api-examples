@@ -1,0 +1,6 @@
+{
+  "secret": "whsec_example_do_not_use_0123456789abcdef",
+  "t": 1791500000,
+  "body": "{\"type\":\"saq.submitted\",\"partnerId\":\"ptr_example\",\"occurredAt\":\"2026-10-09T12:00:00.000Z\",\"data\":{\"merchantId\":\"mrc_example\",\"attemptId\":\"att_example\",\"saqType\":\"SAQ A\"}}",
+  "header": "t=1791500000,v1=8510ef8ab6eed67d98e3c308ce5e9093afd3bd80051fde46ddc090126944b3af"
+}

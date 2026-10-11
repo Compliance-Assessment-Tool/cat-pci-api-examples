@@ -1,0 +1,30 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax
+        run: |
+          node --check node/quickstart.mjs
+          node --check node/verify-webhook.mjs
+          node --check postman/build-postman.mjs
+          python -m py_compile python/quickstart.py python/verify_webhook.py
+          bash -n curl/quickstart.sh
+      - name: Webhook verifiers match CAT's signing
+        run: node --test tests/
+      - name: Postman collection is up to date
+        run: |
+          node postman/build-postman.mjs
+          python -c "import json; json.load(open('postman/CAT-PCI-DSS-Compliance-API.postman_collection.json', encoding='utf-8'))"
