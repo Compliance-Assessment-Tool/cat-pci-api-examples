@@ -1,9 +1,9 @@
 {
   "info": {
-    "_postman_id": "bcc0a862-b9d6-494e-acfd-21a45044ee3b",
+    "_postman_id": "198056b8-3fa0-4b14-8702-e1c5448d92e2",
     "name": "CAT — PCI DSS Compliance API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "# PCI DSS compliance for your whole merchant portfolio\n\n**Compliance Assessment Tool (CAT)** is a white-label PCI DSS self-assessment API for **ISOs, acquiring banks, PayFacs and MSPs**.\n\nYour merchants describe how they take card payments in plain English. CAT works out the correct **PCI DSS v4.0.1 Self-Assessment Questionnaire** for each payment method — SAQ A, A-EP, B, B-IP, C, C-VT, P2PE, SPoC or D — walks the merchant through it one plain-English question at a time, and produces the official, signed **SAQ and Attestation of Compliance (AoC)** PDFs. Signed webhooks and a portfolio API tell your systems who is compliant, in progress or expiring.\n\n## Start in 2 minutes\n\n1. **Get a free sandbox key:** https://banks.complianceassessmenttool.com/signup?utm_source=postman&utm_medium=collection — issued as soon as you verify your email.\n2. **Fork this collection** (or the **CAT Sandbox** environment), select the environment, and paste your key into `apiKey`.\n3. **Run the \"1 · Quickstart\" folder.** In under a minute you'll have the SAQ for a sample merchant and the link to send them.\n\n## Authentication\n\nEvery request sends your key in the `X-API-Key` header (set once on this collection). Sandbox keys start `cat_test_`; documents are watermarked TEST and nothing is billed.\n\n## Ways to integrate\n\n| Path | Lift |\n|---|---|\n| Bulk invite — branded email links to every merchant | Zero code |\n| Platform redirect — merchants return to you with a status | One endpoint |\n| Embedded white-label iframe | Small |\n| REST API — this collection | Custom |\n| MCP server for AI agents and chatbots | Custom |\n\n## Links\n\n- Product: https://banks.complianceassessmenttool.com/pci-compliance-api?utm_source=postman&utm_medium=collection\n- Docs: https://banks.complianceassessmenttool.com/docs?utm_source=postman&utm_medium=collection\n- OpenAPI 3.1 spec: https://api.complianceassessmenttool.com/openapi.json\n- Contact: chris.larson@complianceassessmenttool.com\n\n*CAT facilitates merchant PCI DSS self-assessment. It is not a Qualified Security Assessor and does not certify compliance; acquirers set each merchant's validation requirements. The API never accepts cardholder data.*"
+    "description": "# PCI DSS compliance for your whole merchant portfolio\n\n**Compliance Assessment Tool (CAT)** is a white-label PCI DSS self-assessment API for **ISOs, acquiring banks, PayFacs and MSPs**.\n\nYour merchants describe how they take card payments in plain English, and CAT asks plain-English questions until it has what it needs. CAT works out the correct **PCI DSS v4.0.1 Self-Assessment Questionnaire** for each payment method — SAQ A, A-EP, B, B-IP, C, C-VT, P2PE, SPoC or D — walks the merchant through it one plain-English question at a time, and produces the official, signed **SAQ and Attestation of Compliance (AoC)** PDFs. Signed webhooks and a portfolio API tell your systems who is compliant, in progress or expiring.\n\n## Start in 2 minutes\n\n1. **Get a free sandbox key:** https://banks.complianceassessmenttool.com/signup?utm_source=postman&utm_medium=collection — issued as soon as you verify your email.\n2. **Fork this collection** (or the **CAT Sandbox** environment), select the environment, and paste your key into `apiKey`.\n3. **Run the \"1 · Quickstart\" folder.** In under a minute you'll have the SAQ for a sample merchant and the link to send them.\n\n## Authentication\n\nEvery request sends your key in the `X-API-Key` header (set once on this collection). Sandbox keys start `cat_test_`; documents are watermarked TEST and nothing is billed.\n\n## Ways to integrate\n\n| Path | Lift |\n|---|---|\n| Bulk invite — branded email links to every merchant | Zero code |\n| Platform redirect — merchants return to you with a status | One endpoint |\n| Embedded white-label iframe | Small |\n| REST API — this collection | Custom |\n| MCP server for AI agents and chatbots | Custom |\n\n## Links\n\n- Product: https://banks.complianceassessmenttool.com/pci-compliance-api?utm_source=postman&utm_medium=collection\n- Docs: https://banks.complianceassessmenttool.com/docs?utm_source=postman&utm_medium=collection\n- OpenAPI 3.1 spec: https://api.complianceassessmenttool.com/openapi.json\n- Code examples (curl, Node, Python, webhook verification): https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples\n- Contact: chris.larson@complianceassessmenttool.com\n\n*CAT facilitates merchant PCI DSS self-assessment. It is not a Qualified Security Assessor and does not certify compliance; acquirers set each merchant's validation requirements. The API never accepts cardholder data.*"
   },
   "auth": {
     "type": "apikey",
@@ -95,7 +95,7 @@
   "item": [
     {
       "name": "1 · Quickstart — a merchant's SAQ in 6 calls",
-      "description": "Run this folder top to bottom (or right-click it → **Run folder**). Each request saves the IDs the next one needs, so you never copy-paste.\n\n1. **Create a merchant** — one of your customers.\n2. **Add a payment method** — how they take cards, in their own words. Edit `paymentDescription` in the collection variables to try your own scenario.\n3. **Determine the SAQ** — starts an asynchronous job.\n4. **Check the determination** — poll until it finishes (10–40 s). In the Collection Runner this repeats automatically; by hand, just press **Send** again.\n5. **Answer the follow-up** — only if the API asked one. Put your answer in `followUpAnswer`.\n6. **Create the assessment link** — the URL you'd send the merchant (or embed in your portal).",
+      "description": "Run this folder top to bottom (or right-click it → **Run folder**). Each request saves the IDs the next one needs, so you never copy-paste.\n\n1. **Create a merchant** — one of your customers.\n2. **Add a payment method** — how they take cards, in their own words. Edit `paymentDescription` in the collection variables to try your own scenario.\n3. **Determine the SAQ** — starts an asynchronous job.\n4. **Check the determination** — poll until it finishes (10–40 s). In the Collection Runner this repeats automatically; by hand, just press **Send** again.\n5. **Answer CAT's question** — when CAT needs more detail it asks a plain-English question; put the answer in `followUpAnswer`. Repeat 4–5 until the SAQ is determined.\n6. **Create the assessment link** — the URL you'd send the merchant (or embed in your portal).",
       "item": [
         {
           "name": "1.1 Create a merchant",
@@ -261,7 +261,7 @@
                 "{{jobId}}"
               ]
             },
-            "description": "Poll until `status` is `COMPLETED`. The result is either a **determined** SAQ type with the reasoning, or **needs-followup** with one plain-English question (answer it with 1.5)."
+            "description": "Poll until `status` is `COMPLETED`. The result is either a **determined** SAQ type with the reasoning, or **needs-followup** with a plain-English question for the merchant (answer it with 1.5, then check again)."
           },
           "event": [
             {
@@ -306,10 +306,10 @@
                   "    pm.collectionVariables.set('followUpQuestion', r.followUpQuestion || '');",
                   "    const rounds = Number(pm.collectionVariables.get('followUpRounds') || 0) + 1;",
                   "    pm.collectionVariables.set('followUpRounds', String(rounds));",
-                  "    pm.test('The API asked a follow-up: ' + r.followUpQuestion, () => true);",
+                  "    pm.test('CAT asks: ' + r.followUpQuestion, () => true);",
                   "    // The Runner re-sends the same stored answer, so stop after a few rounds",
                   "    // rather than loop: the question needs a new answer from a person.",
-                  "    if (rounds <= 3) next('1.5 Answer the follow-up (only if asked)');",
+                  "    if (rounds <= 3) next('1.5 Answer the question from CAT');",
                   "    else {",
                   "      pm.test('Still asking after 3 answers — write a new answer in followUpAnswer, then send 1.5 by hand', () => { throw new Error(r.followUpQuestion); });",
                   "      next(null);",
@@ -329,7 +329,7 @@
                   " a{color:#4338ca}",
                   "</style>",
                   "{{#if saqType}}<div class=\"tag\">{{saqType}}</div><p>{{reason}}</p>{{/if}}",
-                  "{{#if followUpQuestion}}<div class=\"q\"><strong>The API needs one more detail:</strong><br>{{followUpQuestion}}<br><br>Put your answer in the <code>followUpAnswer</code> collection variable and send <strong>1.5</strong>.</div>{{/if}}",
+                  "{{#if followUpQuestion}}<div class=\"q\"><strong>CAT asks:</strong><br>{{followUpQuestion}}<br><br>Put your answer in the <code>followUpAnswer</code> collection variable and send <strong>1.5</strong>.</div>{{/if}}",
                   "<p style=\"font-size:12px;color:#64748b\">Compliance Assessment Tool — <a href=\"https://banks.complianceassessmenttool.com/pci-compliance-api?utm_source=postman&utm_medium=collection\">PCI DSS compliance API</a></p>`,",
                   "    { saqType: r.saqType, reason: r.reason, followUpQuestion: r.status === 'needs-followup' ? r.followUpQuestion : null });",
                   "}"
@@ -339,7 +339,7 @@
           ]
         },
         {
-          "name": "1.5 Answer the follow-up (only if asked)",
+          "name": "1.5 Answer the question from CAT",
           "request": {
             "method": "POST",
             "header": [
@@ -362,7 +362,7 @@
                 "followup"
               ]
             },
-            "description": "If 1.4 returned `needs-followup`, answer the question in plain English. The default `followUpAnswer` fits the sample online-store scenario. Then send **1.4** again.",
+            "description": "When 1.4 returns `needs-followup`, answer CAT's question in plain English. The default `followUpAnswer` fits the sample online-store scenario. Then send **1.4** again.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"answer\": \"{{followUpAnswer}}\",\n  \"threadId\": \"{{threadId}}\"\n}",
@@ -576,7 +576,7 @@
     },
     {
       "name": "3 · Webhooks",
-      "description": "CAT signs every webhook: `X-CAT-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\">` using your webhook secret. Events: `saq.submitted`, `merchant.compliant`, `merchant.expiring_soon`, `merchant.expired`, `payment_method.added`, `ping`.\n\nTo try it, set the `webhookUrl` collection variable to a test receiver (for example a free https://webhook.site URL), then run these two requests. Verify signatures with an HMAC-SHA256 over `<t>.<raw body>` and a constant-time compare.",
+      "description": "CAT signs every webhook: `X-CAT-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\">` using your webhook secret. Events: `saq.submitted`, `merchant.compliant`, `merchant.expiring_soon`, `merchant.expired`, `payment_method.added`, `ping`.\n\nTo try it, set the `webhookUrl` collection variable to a test receiver (for example a free https://webhook.site URL), then run these two requests. Verify signatures with an HMAC-SHA256 over `<t>.<raw body>` and a constant-time compare — ready-made verifiers in Node and Python: https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples",
       "item": [
         {
           "name": "Point webhooks at your receiver",

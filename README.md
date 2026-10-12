@@ -8,6 +8,38 @@ Working examples for the [Compliance Assessment Tool (CAT) API](https://banks.co
 
 Your merchants describe how they take card payments in plain English. CAT works out the correct **PCI DSS v4.0.1 Self-Assessment Questionnaire (SAQ)** for each payment method — A, A-EP, B, B-IP, C, C-VT, P2PE, SPoC or D — walks the merchant through it one plain-English question at a time, and produces the official, signed **SAQ and Attestation of Compliance (AoC)** PDFs.
 
+## What CAT does, at a glance
+
+A café owner describes how they take cards, in their own words. CAT asks plain-English questions until it has what it needs, then names the SAQ:
+
+> **Owner:** "Customers tap or insert their card on our machine at the register."
+> **CAT:** Does the card machine work on its own, or is it plugged into a register or computer?
+> **Owner:** It works on its own. It plugs into our internet router with its own cable.
+> **CAT:** Do you save any card numbers on your computers, register, phone system, or in email?
+> **Owner:** No, just paper receipts.
+> **CAT:** ✓ **SAQ B-IP** — a standalone card machine that connects to the processor over the internet, with nothing stored electronically.
+
+Then the owner completes that SAQ the same way — one plain-English question per PCI DSS requirement, such as *"Does each person who takes payments have their own login, rather than everyone sharing one?"* — reviews the answers, and signs. Out come the **official PCI SSC SAQ and Attestation of Compliance PDFs**, and your systems get a signed `merchant.compliant` webhook.
+
+```
+merchant describes how they take cards
+  → CAT asks plain-English questions        → the right SAQ for each payment method
+  → plain-English assessment, then signature → official SAQ + AoC PDFs
+  → webhooks + portfolio API                → you always know who is compliant
+```
+
+More examples, from our test runs:
+
+| The owner says… | What CAT confirms | SAQ |
+|---|---|---|
+| "We sell cakes on our website." | Customers pay on Squarespace's checkout page; no card numbers touch the business | **SAQ A** |
+| "Customers call us to order and we take their card over the phone." | Staff type it into the payment company's web page on one dedicated computer | **SAQ C-VT** |
+| "We have a card machine on the counter." | It dials out over a phone line and isn't connected to the internet | **SAQ B** |
+| "We use a register system on a computer with a card reader plugged into it." | One location, the register computer kept on its own network, no card numbers saved | **SAQ C** |
+| "We take cards on the terminals our processor gave us." | The processor's paperwork says they're part of a PCI-validated P2PE program | **SAQ P2PE** |
+
+## Links
+
 | | |
 |---|---|
 | 🔑 **Free sandbox key** | https://banks.complianceassessmenttool.com/signup?utm_source=github&utm_medium=readme |
@@ -37,7 +69,7 @@ Each one does the same four things:
 
 1. **Create a merchant** — `POST /v1/merchants`
 2. **Add a payment method**, described in the merchant's own words — `POST /v1/merchants/{id}/payment-methods`
-3. **Determine the SAQ** — `POST …/payment-methods/{pmId}/determine` starts a job; poll `GET /v1/jobs/determine/{jobId}` until it's `COMPLETED` (usually 10–40 s). If the description is ambiguous, the result asks **one plain-English follow-up question** instead of guessing — answer it with `POST …/followup`.
+3. **Determine the SAQ** — `POST …/payment-methods/{pmId}/determine` starts a job; poll `GET /v1/jobs/determine/{jobId}` until it's `COMPLETED` (usually 10–40 s). If CAT needs more detail, the result is a plain-English question for the merchant — send their answer with `POST …/followup` and poll again, until the SAQ is determined.
 4. **Hand the merchant their assessment** — `POST /v1/merchants/{id}/portal-link` returns a standalone URL, an embeddable white-label iframe URL, and a hand-off URL that returns the merchant to your platform when they finish.
 
 Example output:

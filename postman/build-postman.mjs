@@ -59,7 +59,7 @@ Run this folder top to bottom (or right-click it → **Run folder**). Each reque
 2. **Add a payment method** — how they take cards, in their own words. Edit \`paymentDescription\` in the collection variables to try your own scenario.
 3. **Determine the SAQ** — starts an asynchronous job.
 4. **Check the determination** — poll until it finishes (10–40 s). In the Collection Runner this repeats automatically; by hand, just press **Send** again.
-5. **Answer the follow-up** — only if the API asked one. Put your answer in \`followUpAnswer\`.
+5. **Answer CAT's question** — when CAT needs more detail it asks a plain-English question; put the answer in \`followUpAnswer\`. Repeat 4–5 until the SAQ is determined.
 6. **Create the assessment link** — the URL you'd send the merchant (or embed in your portal).
 `).join('\n'),
   item: [
@@ -102,7 +102,7 @@ pm.collectionVariables.set('followUpRounds', '0');`,
     request({
       name: '1.4 Check the determination',
       method: 'GET', path: '/v1/jobs/determine/{{jobId}}',
-      description: 'Poll until `status` is `COMPLETED`. The result is either a **determined** SAQ type with the reasoning, or **needs-followup** with one plain-English question (answer it with 1.5).',
+      description: 'Poll until `status` is `COMPLETED`. The result is either a **determined** SAQ type with the reasoning, or **needs-followup** with a plain-English question for the merchant (answer it with 1.5, then check again).',
       prerequest: `
 // Give the job a moment between polls.
 setTimeout(() => {}, 3000);`,
@@ -130,10 +130,10 @@ if (pm.response.code !== 200) {
     pm.collectionVariables.set('followUpQuestion', r.followUpQuestion || '');
     const rounds = Number(pm.collectionVariables.get('followUpRounds') || 0) + 1;
     pm.collectionVariables.set('followUpRounds', String(rounds));
-    pm.test('The API asked a follow-up: ' + r.followUpQuestion, () => true);
+    pm.test('CAT asks: ' + r.followUpQuestion, () => true);
     // The Runner re-sends the same stored answer, so stop after a few rounds
     // rather than loop: the question needs a new answer from a person.
-    if (rounds <= 3) next('1.5 Answer the follow-up (only if asked)');
+    if (rounds <= 3) next('1.5 Answer the question from CAT');
     else {
       pm.test('Still asking after 3 answers — write a new answer in followUpAnswer, then send 1.5 by hand', () => { throw new Error(r.followUpQuestion); });
       next(null);
@@ -153,16 +153,16 @@ if (pm.response.code !== 200) {
  a{color:#4338ca}
 </style>
 {{#if saqType}}<div class="tag">{{saqType}}</div><p>{{reason}}</p>{{/if}}
-{{#if followUpQuestion}}<div class="q"><strong>The API needs one more detail:</strong><br>{{followUpQuestion}}<br><br>Put your answer in the <code>followUpAnswer</code> collection variable and send <strong>1.5</strong>.</div>{{/if}}
+{{#if followUpQuestion}}<div class="q"><strong>CAT asks:</strong><br>{{followUpQuestion}}<br><br>Put your answer in the <code>followUpAnswer</code> collection variable and send <strong>1.5</strong>.</div>{{/if}}
 <p style="font-size:12px;color:#64748b">Compliance Assessment Tool — <a href="${SITE}">PCI DSS compliance API</a></p>\`,
     { saqType: r.saqType, reason: r.reason, followUpQuestion: r.status === 'needs-followup' ? r.followUpQuestion : null });
 }`,
     }),
     request({
-      name: '1.5 Answer the follow-up (only if asked)',
+      name: '1.5 Answer the question from CAT',
       method: 'POST', path: '/v1/merchants/{{merchantId}}/payment-methods/{{pmId}}/followup',
       body: { answer: '{{followUpAnswer}}', threadId: '{{threadId}}' },
-      description: 'If 1.4 returned `needs-followup`, answer the question in plain English. The default `followUpAnswer` fits the sample online-store scenario. Then send **1.4** again.',
+      description: 'When 1.4 returns `needs-followup`, answer CAT\'s question in plain English. The default `followUpAnswer` fits the sample online-store scenario. Then send **1.4** again.',
       tests: `${NEXT}
 pm.test('Answer accepted (202)', () => pm.response.to.have.status(202));
 const res = pm.response.json();
@@ -237,7 +237,7 @@ const webhooks = {
   description: lines(`
 CAT signs every webhook: \`X-CAT-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<raw body>">\` using your webhook secret. Events: \`saq.submitted\`, \`merchant.compliant\`, \`merchant.expiring_soon\`, \`merchant.expired\`, \`payment_method.added\`, \`ping\`.
 
-To try it, set the \`webhookUrl\` collection variable to a test receiver (for example a free https://webhook.site URL), then run these two requests. Verify signatures with an HMAC-SHA256 over \`<t>.<raw body>\` and a constant-time compare.
+To try it, set the \`webhookUrl\` collection variable to a test receiver (for example a free https://webhook.site URL), then run these two requests. Verify signatures with an HMAC-SHA256 over \`<t>.<raw body>\` and a constant-time compare — ready-made verifiers in Node and Python: https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples
 `).join('\n'),
   item: [
     request({
@@ -284,7 +284,7 @@ const collection = {
 
 **Compliance Assessment Tool (CAT)** is a white-label PCI DSS self-assessment API for **ISOs, acquiring banks, PayFacs and MSPs**.
 
-Your merchants describe how they take card payments in plain English. CAT works out the correct **PCI DSS v4.0.1 Self-Assessment Questionnaire** for each payment method — SAQ A, A-EP, B, B-IP, C, C-VT, P2PE, SPoC or D — walks the merchant through it one plain-English question at a time, and produces the official, signed **SAQ and Attestation of Compliance (AoC)** PDFs. Signed webhooks and a portfolio API tell your systems who is compliant, in progress or expiring.
+Your merchants describe how they take card payments in plain English, and CAT asks plain-English questions until it has what it needs. CAT works out the correct **PCI DSS v4.0.1 Self-Assessment Questionnaire** for each payment method — SAQ A, A-EP, B, B-IP, C, C-VT, P2PE, SPoC or D — walks the merchant through it one plain-English question at a time, and produces the official, signed **SAQ and Attestation of Compliance (AoC)** PDFs. Signed webhooks and a portfolio API tell your systems who is compliant, in progress or expiring.
 
 ## Start in 2 minutes
 
@@ -311,6 +311,7 @@ Every request sends your key in the \`X-API-Key\` header (set once on this colle
 - Product: ${SITE}
 - Docs: ${DOCS}
 - OpenAPI 3.1 spec: https://api.complianceassessmenttool.com/openapi.json
+- Code examples (curl, Node, Python, webhook verification): https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples
 - Contact: chris.larson@complianceassessmenttool.com
 
 *CAT facilitates merchant PCI DSS self-assessment. It is not a Qualified Security Assessor and does not certify compliance; acquirers set each merchant's validation requirements. The API never accepts cardholder data.*

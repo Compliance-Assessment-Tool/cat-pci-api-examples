@@ -6,8 +6,8 @@
  *   node node/quickstart.mjs
  *
  * Creates a merchant, adds a payment method described in plain English,
- * determines which PCI DSS SAQ it needs (answering a follow-up question if
- * the API asks one), and mints the link you would send the merchant.
+ * determines which PCI DSS SAQ it needs (answering CAT's plain-English
+ * questions along the way), and mints the link you would send the merchant.
  */
 import readline from 'node:readline/promises';
 
@@ -75,8 +75,8 @@ let result = await waitForJob(
   await api('POST', `/v1/merchants/${merchant.id}/payment-methods/${pm.id}/determine`, { description }),
 );
 
-// If the description is ambiguous, the API asks one plain-English question
-// instead of guessing. Answer it and poll again.
+// CAT asks plain-English questions until it has what it needs to determine
+// the SAQ. Answer each one and poll again.
 while (result.status === 'needs-followup' && result.followUpQuestion) {
   const answer = await ask(`? ${result.followUpQuestion}\n> `);
   if (!answer) {

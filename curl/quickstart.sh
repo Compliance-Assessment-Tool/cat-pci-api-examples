@@ -38,7 +38,7 @@ for _ in $(seq 1 40); do
 done
 
 if [ "$(echo "$JOB" | jq -r .result.status)" = "needs-followup" ]; then
-  # The description was ambiguous, so the API asks one question instead of guessing.
+  # CAT needs more detail: it asks a plain-English question. Answer it, then poll again.
   echo "? $(echo "$JOB" | jq -r .result.followUpQuestion)"
   echo "  Answer it with:"
   echo "  curl -X POST $API/v1/merchants/$MERCHANT_ID/payment-methods/$PM_ID/followup \\"

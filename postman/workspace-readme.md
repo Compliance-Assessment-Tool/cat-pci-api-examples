@@ -10,6 +10,37 @@ Your merchants describe how they take card payments in plain English. CAT determ
 
 It's for engineering and product teams at payment companies evaluating or building a merchant PCI compliance program.
 
+### What CAT does, at a glance
+
+A café owner describes how they take cards, in their own words. CAT asks plain-English questions until it has what it needs, then names the SAQ:
+
+> **Owner:** "Customers tap or insert their card on our machine at the register."
+> **CAT:** Does the card machine work on its own, or is it plugged into a register or computer?
+> **Owner:** It works on its own. It plugs into our internet router with its own cable.
+> **CAT:** Do you save any card numbers on your computers, register, phone system, or in email?
+> **Owner:** No, just paper receipts.
+> **CAT:** ✓ **SAQ B-IP** — a standalone card machine that connects to the processor over the internet, with nothing stored electronically.
+
+Then the owner completes that SAQ the same way — one plain-English question per PCI DSS requirement, such as *"Does each person who takes payments have their own login, rather than everyone sharing one?"* — reviews the answers, and signs. Out come the **official PCI SSC SAQ and Attestation of Compliance PDFs**, and your systems get a signed `merchant.compliant` webhook.
+
+```
+merchant describes how they take cards
+  → CAT asks plain-English questions        → the right SAQ for each payment method
+  → plain-English assessment, then signature → official SAQ + AoC PDFs
+  → webhooks + portfolio API                → you always know who is compliant
+```
+
+More examples, from our test runs:
+
+| The owner says… | What CAT confirms | SAQ |
+|---|---|---|
+| "We sell cakes on our website." | Customers pay on Squarespace's checkout page; no card numbers touch the business | **SAQ A** |
+| "Customers call us to order and we take their card over the phone." | Staff type it into the payment company's web page on one dedicated computer | **SAQ C-VT** |
+| "We have a card machine on the counter." | It dials out over a phone line and isn't connected to the internet | **SAQ B** |
+| "We use a register system on a computer with a card reader plugged into it." | One location, the register computer kept on its own network, no card numbers saved | **SAQ C** |
+| "We take cards on the terminals our processor gave us." | The processor's paperwork says they're part of a PCI-validated P2PE program | **SAQ P2PE** |
+
+
 ## Getting started
 
 1. **Get a free sandbox key** → [banks.complianceassessmenttool.com/signup](https://banks.complianceassessmenttool.com/signup?utm_source=postman&utm_medium=workspace). It's issued as soon as you verify your email.
@@ -22,8 +53,9 @@ Want to try your own scenario? Change the `paymentDescription` collection variab
 
 | | |
 |---|---|
-| **CAT — PCI DSS Compliance API** (collection) | **1 · Quickstart:** create a merchant → add a payment method → determine the SAQ → answer the follow-up question if one is asked → create the assessment link. Every step saves the IDs the next one needs. **2 · Your account & portfolio:** your account, the portfolio compliance rollup, merchants, assessments. **3 · Webhooks:** point events at your receiver and send a signed test. **4 · Sandbox housekeeping:** clean up. |
+| **CAT — PCI DSS Compliance API** (collection) | **1 · Quickstart:** create a merchant → add a payment method → determine the SAQ → answer CAT's plain-English questions → create the assessment link. Every step saves the IDs the next one needs. **2 · Your account & portfolio:** your account, the portfolio compliance rollup, merchants, assessments. **3 · Webhooks:** point events at your receiver and send a signed test. **4 · Sandbox housekeeping:** clean up. |
 | **CAT Sandbox** (environment) | One variable, `apiKey`, deliberately empty — you add your own key. |
+| **Code examples** | Quickstarts in curl, Node and Python, plus webhook-signature verifiers: [github.com/Compliance-Assessment-Tool/cat-pci-api-examples](https://github.com/Compliance-Assessment-Tool/cat-pci-api-examples) |
 | **Full API reference** | Every endpoint is in the [OpenAPI 3.1 spec](https://api.complianceassessmenttool.com/openapi.json) and the [integration guide](https://banks.complianceassessmenttool.com/docs?utm_source=postman&utm_medium=workspace). |
 
 **Ways to launch with your merchants:** bulk invite with branded email links (zero code) · platform redirect that returns merchants to you with a status · embedded white-label iframe · this REST API · an MCP server for AI agents and chatbots.
